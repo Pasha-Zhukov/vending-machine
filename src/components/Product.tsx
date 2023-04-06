@@ -1,9 +1,15 @@
-export function Product({ data }) {
+interface dataProducts {
+  name: string;
+  price: number;
+  remainder: number;
+  id: number;
+}
+export const Product = ({ data }: any) => {
   return (
     <>
-      {data.map((item, index) =>
+      {data.map((item: dataProducts) =>
         item.remainder ? (
-          <div key={`${index}kbdsvs`}>
+          <div key={item.id}>
             <div className="product">
               <div>Ячейка № {item.id}</div>
               {item.name}
@@ -12,7 +18,7 @@ export function Product({ data }) {
             </div>
           </div>
         ) : (
-          <div key={`${index}kghbdsvs`}>
+          <div key={item.id}>
             <div className="product">
               <div>Ячейка № {item.id}</div>
               <div>{`${item.name} Нет в наличии`}</div>
@@ -22,4 +28,4 @@ export function Product({ data }) {
       )}
     </>
   );
-}
+};

@@ -1,4 +1,6 @@
-const initialState = {
+import { mainData } from "../type";
+
+const initialState: mainData = {
   products: [
     { name: "Кит Кат", price: 58, remainder: 3, id: 1 },
     { name: "Snickers", price: 85, remainder: 5, id: 2 },
@@ -9,8 +11,8 @@ const initialState = {
     { name: "Mars", price: 58, remainder: 2, id: 7 },
     { name: "Twix", price: 60, remainder: 7, id: 8 },
   ],
-  price: [],
-  saleProduct: 0,
+  price: 0,
+  saleProduct: "",
   change: [],
   changeBank: {
     500: 3,
@@ -22,14 +24,13 @@ const initialState = {
   },
 };
 
-export const SET_DATA = "SET_DATA";
 export const SET_PRICE = "SET_PRICE";
 export const SET_COUNT = "SET_COUNT";
 export const SET_REMAINDER = "SET_REMAINDER";
 export const SET_CHANGEBANK = "SET_CHANGEBANK";
 export const SET_RESETPRICE = "SET_RESETPRICE";
 
-const reducer = (state = initialState, action) => {
+const reducer = (state = initialState, action: any) => {
   switch (action.type) {
     case SET_COUNT:
       return {
@@ -57,8 +58,6 @@ const reducer = (state = initialState, action) => {
         ...state,
         price: action.payload,
       };
-    case SET_DATA:
-      return action.payload;
     default:
       return state;
   }

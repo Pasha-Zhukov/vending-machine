@@ -6,53 +6,60 @@ import {
   setChangeBank,
   setResetPrice,
 } from "../actions";
+import { mainData } from "../type";
+
 import { useDispatch } from "react-redux";
-const issuanceClient = [];
-export const Payment = ({ data }) => {
-  const sumPrice = data?.price;
+const issuanceClient: number[] = [];
+
+export const Payment = (props: { data: mainData }) => {
+  const { data } = props;
+  const sumPrice: number = data?.price;
 
   const dispatch = useDispatch();
   const [infoDisp, setInfoDisp] = useState("");
   const [infoDispCash, setinfoDispCash] = useState("");
   const [AddCash, setAddCash] = useState("");
-  const [change, setChange] = useState("");
+  const [change, setChange] = useState(0);
 
-  const productSelection = (number) => {
-    const productPrice = data.products.find((product) => product.id === number); // Получили получили выбранный товар
-
-    if (sumPrice && productPrice.price < sumPrice) {
-      if (productPrice.remainder) {
-        dispatch(setPrice(0 - productPrice.price));
-        dispatch(setCount(productPrice.name));
-        dispatch(
-          saleRemainder(
-            data.products.map((product) =>
-              product.id === productPrice.id
-                ? { ...product, remainder: product.remainder - 1 }
-                : product
+  const productSelection = (number: number) => {
+    const productPrice = data.products.find((product) => product.id === number); // Получили выбранный товар
+    if (typeof productPrice === "object") {
+      if (sumPrice && productPrice.price < sumPrice) {
+        if (productPrice.remainder) {
+          dispatch(setPrice(0 - productPrice.price));
+          dispatch(setCount(productPrice.name));
+          dispatch(
+            saleRemainder(
+              data.products.map((product) =>
+                product.id === productPrice.id
+                  ? { ...product, remainder: product.remainder - 1 }
+                  : product
+              )
             )
-          )
-        );
+          );
 
-        setInfoDisp("");
+          setInfoDisp("");
+        } else {
+          setInfoDisp("Товара нет в наличичи");
+        }
+      } else if (productPrice.price > sumPrice && sumPrice) {
+        setAddCash("Добавьте денег");
       } else {
-        setInfoDisp("Товара нет в наличичи");
+        setinfoDispCash(`Цена ${productPrice.price}`);
       }
-    } else if (productPrice.price > sumPrice && sumPrice) {
-      setAddCash("Добавьте денег");
-    } else {
-      setinfoDispCash(`Цена ${productPrice.price}`);
     }
   };
-  const productPrice = (price) => {
+
+  const productPrice = (price: number) => {
     dispatch(setPrice(price));
     setAddCash("");
-    setChange("");
+    setChange(0);
   };
-  const issuanceChange = (change) => {
+  const issuanceChange = (change: number) => {
+    console.log(change);
     const newChangeBank = { ...data.changeBank };
-    function sumTo(change) {
-      if (change == 0) return;
+    function sumTo(change: number) {
+      if (change === 0) return;
       if (change >= 500 && newChangeBank[500]) {
         issuanceClient.push(500);
         newChangeBank[500] -= 1;
@@ -83,8 +90,8 @@ export const Payment = ({ data }) => {
         dispatch(saleRemainder(newProducts));
       }
     }
-    function productsChange(change, products) {
-      if (change == 0) return;
+    function productsChange(change: number, products: any) {
+      if (change === 0) return;
       if (change >= 90 && products[4].remainder) {
         issuanceClient.push(products[4].name);
         products[4].remainder -= 1;
@@ -119,7 +126,7 @@ export const Payment = ({ data }) => {
         productsChange(change - 30, products);
       } else {
         alert(
-          `Извините не смогли выдать вам ${change}. Обратитесь в поддержку`
+          `Извините не смогли выдать вам ${change}. Обратитесь в поддержку по т.:8-800-000-00-00`
         );
       }
     }
@@ -127,14 +134,14 @@ export const Payment = ({ data }) => {
     sumTo(change);
     dispatch(setChangeBank(newChangeBank));
     dispatch(setCount(""));
-    dispatch(setPrice());
-    dispatch(setResetPrice(0));
+    dispatch(setPrice(0));
+    dispatch(setResetPrice([0]));
   };
   const buttonLabel = [1, 2, 3, 4, 5, 6, 7, 8];
 
-  const button = buttonLabel.map((btn, index) => {
+  const button = buttonLabel.map((btn) => {
     return (
-      <button key={`${index}kbdsvs`} onClick={() => productSelection(btn)}>
+      <button key={btn} onClick={() => productSelection(btn)}>
         {btn}
       </button>
     );
@@ -142,9 +149,9 @@ export const Payment = ({ data }) => {
 
   const buttonPrice = [50, 100, 500, 1000];
 
-  const price = buttonPrice.map((btn, index) => {
+  const price = buttonPrice.map((btn) => {
     return (
-      <button key={`${index}kbdsvsvss`} onClick={() => productPrice(btn)}>
+      <button key={btn} onClick={() => productPrice(btn)}>
         {btn}
       </button>
     );
@@ -154,9 +161,9 @@ export const Payment = ({ data }) => {
       <div>
         {sumPrice > 1 ? `${sumPrice} р. Выберите товар ` : "Вставьте купюру:"}
       </div>
-      <div>{infoDisp ? infoDisp : ""}</div>
+      <div>{infoDisp || ""}</div>
       <div>{infoDispCash && !sumPrice ? infoDispCash : ""}</div>
-      <div>{AddCash ? AddCash : ""}</div>
+      <div>{AddCash || ""}</div>
       <div className="wrapper_button">{price}</div>
       <div className="wrapper_button">{button}</div>
       <button onClick={() => issuanceChange(sumPrice)}>Выдать сдачу</button>

@@ -1,12 +1,11 @@
 import { Product } from "./components/Product";
 import { Payment } from "./components/Payment";
 import { useSelector } from "react-redux";
-
+import { mainData } from "./type";
 import "./App.css";
 
 const App = () => {
-  const data = useSelector((state) => state);
-  // console.log(data);
+  const data = useSelector((state: mainData) => state);
 
   return (
     <div className="container">
